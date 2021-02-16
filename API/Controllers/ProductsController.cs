@@ -1,21 +1,34 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Infrastructure.Data;
+using Core.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductsController: ControllerBase
+    public class ProductsController : ControllerBase
     {
-        [HttpGet]
-        public string Products()
+        public readonly StoreContext _storecontext;
+        public ProductsController(StoreContext storeContext)
         {
-            return "This will gives the list of products";
+            _storecontext = storeContext;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Product>>> Products()
+        {
+            var products =await _storecontext.products.ToListAsync();
+            return Ok(products);
         }
 
         [HttpGet("{id}")]
-         public string Product()
+        public async Task<ActionResult<Product>> Product(int id)
         {
-            return "This will gives single product";
+            return await _storecontext.products.FindAsync(id);
         }
     }
 }
